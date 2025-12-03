@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekend Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            color: #fff;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        input[type="date"] {
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        button {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px 30px;
+            border-radius: 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-number.past {
+            color: #e74c3c;
+        }
+
+        .stat-number.future {
+            color: #2ecc71;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .dots-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .dot:hover {
+            transform: scale(2);
+        }
+
+        .dot.past {
+            background-color: #e74c3c;
+        }
+
+        .dot.future {
+            background-color: #1a1a2e;
+            border: 1px solid #333;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.past {
+            background-color: #e74c3c;
+        }
+
+        .legend-dot.future {
+            background-color: #1a1a2e;
+            border: 1px solid #333;
+        }
+
+        #result {
+            display: none;
+        }
+
+        .life-message {
+            color: #888;
+            font-style: italic;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Weekend Calculator</h1>
+        <p class="subtitle">Hayatındaki hafta sonlarını görselleştir</p>
+
+        <div class="input-section">
+            <label for="birthdate">Doğum Tarihin</label>
+            <input type="date" id="birthdate">
+            <br>
+            <button onclick="calculate()">Hesapla</button>
+        </div>
+
+        <div id="result">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number past" id="pastCount">0</div>
+                    <div class="stat-label">Geçen Hafta Sonu</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number future" id="futureCount">0</div>
+                    <div class="stat-label">Kalan Hafta Sonu</div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot past"></div>
+                    <span>Geçen</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot future"></div>
+                    <span>Kalan</span>
+                </div>
+            </div>
+
+            <div class="dots-container">
+                <div class="dots" id="dotsContainer"></div>
+            </div>
+
+            <p class="life-message" id="lifeMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        const LIFE_EXPECTANCY = 73; // Dünya ortalaması
+        const TOTAL_WEEKENDS = LIFE_EXPECTANCY * 52;
+
+        function calculate() {
+            const birthdateInput = document.getElementById('birthdate').value;
+
+            if (!birthdateInput) {
+                alert('Lütfen doğum tarihini girin!');
+                return;
+            }
+
+            const birthdate = new Date(birthdateInput);
+            const today = new Date();
+
+            if (birthdate > today) {
+                alert('Doğum tarihi bugünden sonra olamaz!');
+                return;
+            }
+
+            // Geçen hafta sayısını hesapla
+            const diffTime = Math.abs(today - birthdate);
+            const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+            const pastWeekends = Math.min(diffWeeks, TOTAL_WEEKENDS);
+            const futureWeekends = Math.max(0, TOTAL_WEEKENDS - pastWeekends);
+
+            // Sonuçları göster
+            document.getElementById('pastCount').textContent = pastWeekends.toLocaleString('tr-TR');
+            document.getElementById('futureCount').textContent = futureWeekends.toLocaleString('tr-TR');
+
+            // Noktaları oluştur
+            const dotsContainer = document.getElementById('dotsContainer');
+            dotsContainer.innerHTML = '';
+
+            // Performans için her 4 hafta sonunu 1 nokta olarak göster
+            const scale = TOTAL_WEEKENDS > 1000 ? 4 : 1;
+            const scaledPast = Math.floor(pastWeekends / scale);
+            const scaledFuture = Math.floor(futureWeekends / scale);
+
+            for (let i = 0; i < scaledPast; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot past';
+                dot.title = `Hafta sonu ${i * scale + 1}-${(i + 1) * scale}`;
+                dotsContainer.appendChild(dot);
+            }
+
+            for (let i = 0; i < scaledFuture; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot future';
+                dot.title = `Hafta sonu ${scaledPast * scale + i * scale + 1}-${scaledPast * scale + (i + 1) * scale}`;
+                dotsContainer.appendChild(dot);
+            }
+
+            // Motivasyon mesajı
+            const percentage = ((pastWeekends / TOTAL_WEEKENDS) * 100).toFixed(1);
+            const messages = [
+                `Hayatının %${percentage}'ini yaşadın. Kalan her hafta sonu bir hediye! 🎁`,
+                `${futureWeekends.toLocaleString('tr-TR')} hafta sonu daha var. Değerlendir! ✨`,
+                `Her nokta bir hafta sonu. Her biri önemli. 💫`
+            ];
+            document.getElementById('lifeMessage').textContent = messages[Math.floor(Math.random() * messages.length)];
+
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
