@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -194,40 +194,48 @@
             margin-top: 20px;
             font-size: 0.95rem;
         }
+
+        .footnote {
+            color: #555;
+            font-size: 0.8rem;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⏰ Weekend Calculator</h1>
-        <p class="subtitle">Hayatındaki hafta sonlarını görselleştir</p>
+        <p class="subtitle">Visualize the weekends of your life</p>
 
         <div class="input-section">
-            <label for="birthdate">Doğum Tarihin</label>
+            <label for="birthdate">Your Birth Date</label>
             <input type="date" id="birthdate">
             <br>
-            <button onclick="calculate()">Hesapla</button>
+            <button onclick="calculate()">Calculate</button>
         </div>
 
         <div id="result">
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-number past" id="pastCount">0</div>
-                    <div class="stat-label">Geçen Hafta Sonu</div>
+                    <div class="stat-label">Weekends Passed</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-number future" id="futureCount">0</div>
-                    <div class="stat-label">Kalan Hafta Sonu</div>
+                    <div class="stat-label">Weekends Remaining</div>
                 </div>
             </div>
 
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-dot past"></div>
-                    <span>Geçen</span>
+                    <span>Passed</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-dot future"></div>
-                    <span>Kalan</span>
+                    <span>Remaining</span>
                 </div>
             </div>
 
@@ -237,17 +245,19 @@
 
             <p class="life-message" id="lifeMessage"></p>
         </div>
+
+        <p class="footnote">* Calculation based on global average life expectancy of 73 years (WHO, 2023)</p>
     </div>
 
     <script>
-        const LIFE_EXPECTANCY = 73; // Dünya ortalaması
+        const LIFE_EXPECTANCY = 73;
         const TOTAL_WEEKENDS = LIFE_EXPECTANCY * 52;
 
         function calculate() {
             const birthdateInput = document.getElementById('birthdate').value;
 
             if (!birthdateInput) {
-                alert('Lütfen doğum tarihini girin!');
+                alert('Please enter your birth date!');
                 return;
             }
 
@@ -255,25 +265,21 @@
             const today = new Date();
 
             if (birthdate > today) {
-                alert('Doğum tarihi bugünden sonra olamaz!');
+                alert('Birth date cannot be in the future!');
                 return;
             }
 
-            // Geçen hafta sayısını hesapla
             const diffTime = Math.abs(today - birthdate);
             const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
             const pastWeekends = Math.min(diffWeeks, TOTAL_WEEKENDS);
             const futureWeekends = Math.max(0, TOTAL_WEEKENDS - pastWeekends);
 
-            // Sonuçları göster
-            document.getElementById('pastCount').textContent = pastWeekends.toLocaleString('tr-TR');
-            document.getElementById('futureCount').textContent = futureWeekends.toLocaleString('tr-TR');
+            document.getElementById('pastCount').textContent = pastWeekends.toLocaleString('en-US');
+            document.getElementById('futureCount').textContent = futureWeekends.toLocaleString('en-US');
 
-            // Noktaları oluştur
             const dotsContainer = document.getElementById('dotsContainer');
             dotsContainer.innerHTML = '';
 
-            // Performans için her 4 hafta sonunu 1 nokta olarak göster
             const scale = TOTAL_WEEKENDS > 1000 ? 4 : 1;
             const scaledPast = Math.floor(pastWeekends / scale);
             const scaledFuture = Math.floor(futureWeekends / scale);
@@ -281,23 +287,22 @@
             for (let i = 0; i < scaledPast; i++) {
                 const dot = document.createElement('div');
                 dot.className = 'dot past';
-                dot.title = `Hafta sonu ${i * scale + 1}-${(i + 1) * scale}`;
+                dot.title = `Weekend ${i * scale + 1}-${(i + 1) * scale}`;
                 dotsContainer.appendChild(dot);
             }
 
             for (let i = 0; i < scaledFuture; i++) {
                 const dot = document.createElement('div');
                 dot.className = 'dot future';
-                dot.title = `Hafta sonu ${scaledPast * scale + i * scale + 1}-${scaledPast * scale + (i + 1) * scale}`;
+                dot.title = `Weekend ${scaledPast * scale + i * scale + 1}-${scaledPast * scale + (i + 1) * scale}`;
                 dotsContainer.appendChild(dot);
             }
 
-            // Motivasyon mesajı
             const percentage = ((pastWeekends / TOTAL_WEEKENDS) * 100).toFixed(1);
             const messages = [
-                `Hayatının %${percentage}'ini yaşadın. Kalan her hafta sonu bir hediye! 🎁`,
-                `${futureWeekends.toLocaleString('tr-TR')} hafta sonu daha var. Değerlendir! ✨`,
-                `Her nokta bir hafta sonu. Her biri önemli. 💫`
+                `You've lived ${percentage}% of your weekends. Make every remaining one count! 🎁`,
+                `${futureWeekends.toLocaleString('en-US')} weekends left. Make them memorable! ✨`,
+                `Each dot is a weekend. Each one matters. 💫`
             ];
             document.getElementById('lifeMessage').textContent = messages[Math.floor(Math.random() * messages.length)];
 
